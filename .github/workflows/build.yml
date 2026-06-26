@@ -17,8 +17,34 @@ jobs:
       - name: Debug - List files
         run: find . -maxdepth 4 -not -path "./.git/*" | sort
 
+      - name: Create project.yml (inline to avoid web UI issues)
+        run: |
+          cat > project.yml << 'YAMLEOF'
+name: MeiRiSanXing
+options:
+  bundleIdPrefix: com.example
+  deploymentTarget:
+    iOS: "18.0"
+targets:
+  MeiRiSanXing:
+    type: application
+    platform: iOS
+    sources:
+      - Sources/MeiRiSanXing
+    info:
+      path: Info.plist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.meirisanxing
+        INFOPLIST_FILE: Info.plist
+        CODE_SIGN_STYLE: Automatic
+YAMLEOF
+
       - name: Install XcodeGen
         run: brew install xcodegen
+
+      - name: Debug - Show project.yml
+        run: cat project.yml
 
       - name: Generate Xcode Project
         run: xcodegen generate
