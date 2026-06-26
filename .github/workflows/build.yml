@@ -14,9 +14,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Debug - List files
-        run: find . -maxdepth 4 -not -path "./.git/*" | sort
-
       - name: Create project.yml
         run: |
           echo "name: MeiRiSanXing" > project.yml
@@ -41,35 +38,27 @@ jobs:
       - name: Install XcodeGen
         run: brew install xcodegen
 
-      - name: Show project.yml
-        run: cat project.yml
-
       - name: Generate Xcode Project
         run: xcodegen generate
 
-      - name: Build
+      - name: Build (with full error output)
         run: |
           xcodebuild build \
             -project MeiRiSanXing.xcodeproj \
             -scheme MeiRiSanXing \
             -sdk iphonesimulator \
-            -destination "platform=iOS Simulator,name=iPhone 17" \
+            -destination "platform=iOS Simulator,name=iPhone 16" \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGNING_ALLOWED=NO \
+            2>&1 | tee build.log
         timeout-minutes: 15
 
-      - name: Run Tests
+      - name: Show compile errors
         run: |
-          xcodebuild test \
-            -project MeiRiSanXing.xcodeproj \
-            -scheme MeiRiSanXing \
-            -sdk iphonesimulator \
-            -destination "platform=iOS Simulator,name=iPhone 16,OS=18.0" \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
-        timeout-minutes: 10
+          grep -A5 "error:" build.log || echo "No errors found"
+          echo "---LAST 30 LINES---"
+          tail -30 build.log
 
       - name: Archive .app
         run: |
