@@ -1,0 +1,17 @@
+﻿platforms:
+  iOS: "18.0"
+targets:
+  MeiRiSanXing:
+    type: application
+    platform: iOS
+    deploymentTarget: "18.0"
+    sources: Sources/MeiRiSanXing
+    info:
+      path: Info.plist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.meirisanxing
+        INFOPLIST_FILE: Info.plist
+        DEVELOPMENT_TEAM: ""
+        CODE_SIGN_STYLE: Manual
+        CODE_SIGN_IDENTITY: ""
