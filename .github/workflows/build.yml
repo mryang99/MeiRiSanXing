@@ -17,33 +17,31 @@ jobs:
       - name: Debug - List files
         run: find . -maxdepth 4 -not -path "./.git/*" | sort
 
-      - name: Create project.yml (inline to avoid web UI issues)
+      - name: Create project.yml
         run: |
-          cat > project.yml << 'YAMLEOF'
-name: MeiRiSanXing
-options:
-  bundleIdPrefix: com.example
-  deploymentTarget:
-    iOS: "18.0"
-targets:
-  MeiRiSanXing:
-    type: application
-    platform: iOS
-    sources:
-      - Sources/MeiRiSanXing
-    info:
-      path: Info.plist
-    settings:
-      base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.example.meirisanxing
-        INFOPLIST_FILE: Info.plist
-        CODE_SIGN_STYLE: Automatic
-YAMLEOF
+          echo "name: MeiRiSanXing" > project.yml
+          echo "options:" >> project.yml
+          echo "  bundleIdPrefix: com.example" >> project.yml
+          echo "  deploymentTarget:" >> project.yml
+          echo '    iOS: "18.0"' >> project.yml
+          echo "targets:" >> project.yml
+          echo "  MeiRiSanXing:" >> project.yml
+          echo "    type: application" >> project.yml
+          echo "    platform: iOS" >> project.yml
+          echo "    sources:" >> project.yml
+          echo "      - Sources/MeiRiSanXing" >> project.yml
+          echo "    info:" >> project.yml
+          echo "      path: Info.plist" >> project.yml
+          echo "    settings:" >> project.yml
+          echo "      base:" >> project.yml
+          echo "        PRODUCT_BUNDLE_IDENTIFIER: com.example.meirisanxing" >> project.yml
+          echo "        INFOPLIST_FILE: Info.plist" >> project.yml
+          echo "        CODE_SIGN_STYLE: Automatic" >> project.yml
 
       - name: Install XcodeGen
         run: brew install xcodegen
 
-      - name: Debug - Show project.yml
+      - name: Show project.yml
         run: cat project.yml
 
       - name: Generate Xcode Project
