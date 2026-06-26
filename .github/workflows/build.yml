@@ -1,0 +1,63 @@
+name: Build & Test
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: |
+          sudo xcode-select -s /Applications/Xcode_16.app/Contents/Developer
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode Project
+        run: xcodegen generate --project project.yml
+
+      - name: Build
+        run: |
+          xcodebuild build \
+            -project MeiRiSanXing.xcodeproj \
+            -scheme MeiRiSanXing \
+            -sdk iphonesimulator \
+            -destination "platform=iOS Simulator,name=iPhone 16,OS=18.0" \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+        timeout-minutes: 15
+
+      - name: Run Tests
+        run: |
+          xcodebuild test \
+            -project MeiRiSanXing.xcodeproj \
+            -scheme MeiRiSanXing \
+            -sdk iphonesimulator \
+            -destination "platform=iOS Simulator,name=iPhone 16,OS=18.0" \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+        timeout-minutes: 10
+
+      - name: Archive .app
+        run: |
+          cd ~/Library/Developer/Xcode/DerivedData
+          find . -name "*.app" -path "*/Build/Products/*" | head -1 | xargs -I{} cp -R {} $RUNNER_TEMP/MeiRiSanXing.app
+          cd $RUNNER_TEMP
+          zip -r MeiRiSanXing.zip MeiRiSanXing.app
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MeiRiSanXing-app
+          path: ${{ runner.temp }}/MeiRiSanXing.zip
