@@ -53,7 +53,7 @@ jobs:
             -project MeiRiSanXing.xcodeproj \
             -scheme MeiRiSanXing \
             -sdk iphonesimulator \
-            -destination "platform=iOS Simulator,name=iPhone 16,OS=18.0" \
+            -destination "platform=iOS Simulator,name=iPhone 17" \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO
