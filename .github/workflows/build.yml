@@ -41,13 +41,13 @@ jobs:
       - name: Generate Xcode Project
         run: xcodegen generate
 
-      - name: Build (with full error output)
+      - name: Build for device (unsigned)
         run: |
           xcodebuild build \
             -project MeiRiSanXing.xcodeproj \
             -scheme MeiRiSanXing \
-            -sdk iphonesimulator \
-            -destination "platform=iOS Simulator,name=iPhone 16" \
+            -sdk iphoneos \
+            -destination "generic/platform=iOS" \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
@@ -56,14 +56,14 @@ jobs:
 
       - name: Show compile errors
         run: |
-          grep -A5 "error:" build.log || echo "No errors found"
-          echo "---LAST 30 LINES---"
-          tail -30 build.log
+          grep -A5 "error:" build.log || echo "✅ Build succeeded!"
+          echo "---LAST 20 LINES---"
+          tail -20 build.log
 
       - name: Archive .app
         run: |
           cd ~/Library/Developer/Xcode/DerivedData
-          find . -name "*.app" -path "*/Build/Products/*" | head -1 | xargs -I{} cp -R {} $RUNNER_TEMP/MeiRiSanXing.app
+          find . -name "*.app" -path "*/Build/Products/Debug*" | head -1 | xargs -I{} cp -R {} $RUNNER_TEMP/MeiRiSanXing.app
           cd $RUNNER_TEMP
           zip -r MeiRiSanXing.zip MeiRiSanXing.app
 
